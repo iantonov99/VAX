@@ -1,14 +1,23 @@
 /**
  * FMI VR/AR/XR Library
- * 2022-03-10
- * v 0.003
+ * 2022-03-18
+ * v 0.005
+ *
+ * perspective		флаг (true/false) дали да се ползва
+ *					перспектива или да не се ползва
  *
  * vaxInit()		инициализира моно режим и поддържа
  *					анимационен цикъл с animate()
  *
+ * vaxInitAnaglyph() инициализира на анаглифен режим и
+ *					поддържа анимационен цикъл с animate()
+ *
+ * vaxInitParallax(eyeSep) инициализира на паралаксен режим
+ *					и поддържа анимационен цикъл с animate()
+ *
  * vaxSceneInit()	инициализира и създава сцена със земя
  *
- * animate(t)		потребителска функция, която генерира нов
+ * animate(t,dT)	потребителска функция, която генерира нов
  *					кадър; извиква се автоматично
  *
  * pillar(center, material) създава пилон с връх center,
@@ -17,7 +26,7 @@
  */
 
 
-var renderer, scene, camera, light, stats, t, animate;
+var renderer, scene, camera, light, stats, t, animate, perspective = true;
 
 
 function vaxInit()
@@ -34,19 +43,23 @@ function vaxInit()
 		document.body.appendChild( stats.dom );
 	}
 	
-	if( Physijs )
+	if( typeof Physijs != 'undefined' )
 		scene = new Physijs.Scene();
 	else
 		scene = new THREE.Scene();
 
 	scene.background = new THREE.Color('white');
 
-	camera = new THREE.PerspectiveCamera( 60, 1, 1, 1000 );
-	camera.position.set(0,0,100);
-	camera.lookAt(new THREE.Vector3(0,0,0));
+	if(	perspective )
+		camera = new THREE.PerspectiveCamera( 60, 1, 1, 1000 );
+	else
+		camera = new THREE.OrthographicCamera( -window.innerWidth/2, window.innerWidth/2, window.innerHeight/2, -window.innerHeight/2, 1, 1000 );
+
+	camera.position.set( 0, 0, 100 );
+	camera.lookAt( new THREE.Vector3(0,0,0) );
 	
 	light = new THREE.PointLight();
-	light.position.set(0,150,300);
+	light.position.set( 0, 150, 300 );
 	scene.add( light );
 	
 	window.addEventListener( 'resize', onWindowResize, false );
@@ -56,17 +69,111 @@ function vaxInit()
 }
 
 
+function vaxInitAnaglyph( )
+{
+	renderer = new THREE.WebGLRenderer( {antialias: true} );
+	document.body.appendChild( renderer.domElement );
+	document.body.style.margin = 0;
+	document.body.style.overflow = 'hidden';
+	
+	if( typeof Stats != 'undefined'	)
+	{
+		stats = new Stats();
+		document.body.appendChild( stats.dom );
+	}
+
+	if( typeof Physijs !== 'undefined' )
+		scene = new Physijs.Scene();
+	else
+		scene = new THREE.Scene();
+
+	scene.background = new THREE.Color('white');
+
+	camera = new THREE.PerspectiveCamera( 60, 1, 1, 10000 );
+	camera.focus = 10;
+				
+	camera.position.set( 0, 0, 100 );
+	camera.lookAt( new THREE.Vector3(0,0,0) );
+	
+	light = new THREE.PointLight();
+	light.position.set( 0, 150, 300 );
+	scene.add( light );
+
+	effect = new THREE.AnaglyphEffect( renderer );
+	effect.setSize( window.innerWidth, window.innerHeight );
+				
+				
+	window.addEventListener( 'resize', onWindowResizeAnaglyph, false );
+	onWindowResizeAnaglyph();
+	
+	renderer.setAnimationLoop( frameAnaglyph );
+}
+
+
+function vaxInitParallax( eyeSep = 1 )
+{
+	renderer = new THREE.WebGLRenderer( {antialias:true} );
+	document.body.appendChild( renderer.domElement );
+	document.body.style.margin = 0;
+	document.body.style.overflow = 'hidden';
+	
+	if( typeof Stats != 'undefined'	)
+	{
+		stats = new Stats();
+		document.body.appendChild( stats.dom );
+	}
+
+	if( typeof Physijs !== 'undefined' )
+		scene = new Physijs.Scene();
+	else
+		scene = new THREE.Scene();
+
+	scene.background = new THREE.Color('white');
+
+	camera = new THREE.PerspectiveCamera( 60, 1, 1, 10000 );
+	camera.focус = 10;
+				
+	camera.position.set( 0, 0, 100 );
+	camera.lookAt( new THREE.Vector3(0,0,0) );
+	
+	light = new THREE.PointLight();
+	light.position.set( 0, 150, 300 );
+	scene.add( light );
+
+	effect = new THREE.StereoEffect( renderer );
+	effect.setSize( window.innerWidth, window.innerHeight );
+	effect.setEyeSeparation( eyeSep );
+				
+				
+	window.addEventListener( 'resize', onWindowResizeAnaglyph, false ); // преизползваме анаглифния случай
+	onWindowResizeAnaglyph();
+	
+	renderer.setAnimationLoop( frameAnaglyph ); // преизползваме анаглифния случай
+}
+
+
+
 function onWindowResize( event )
 {
-	camera.aspect = window.innerWidth/window.innerHeight;
+	if(	perspective ) camera.aspect = window.innerWidth/window.innerHeight;
 	camera.updateProjectionMatrix();
 
 	renderer.setSize( window.innerWidth, window.innerHeight, true );
 }			
 
 
+function onWindowResizeAnaglyph( event )
+{
+	camera.aspect = window.innerWidth/window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	effect.setSize( window.innerWidth, window.innerHeight, true );
+}			
+
+
 var oldTime = 0;
 var accTime = 0;
+var setTime = 0;
 function frame( time )
 {
 	// защита от прекалено голяма скорост, при по-бързи компютри някои анимации
@@ -76,11 +183,32 @@ function frame( time )
 	if( accTime < 1000/60 ) return;
 	accTime = 0;
 	
-	if( animate ) animate( time/1000 );
+	if( animate ) animate( time/1000, (time-setTime)/1000 );
+	
+	setTime = time;
 	
 	stats?.update();
 	
 	renderer.render( scene, camera );
+}
+
+
+function frameAnaglyph( time )
+{
+	// защита от прекалено голяма скорост, при по-бързи компютри някои анимации
+	// ще са прекалено бързи, затова изкуствено се забавя до 60 fps
+	accTime += time-oldTime;
+	oldTime = time;
+	if( accTime < 1000/60 ) return;
+	accTime = 0;
+
+	if( animate ) animate( time/1000, (time-setTime)/1000 );
+	
+	setTime = time;
+	
+	stats?.update();
+	
+	effect.render( scene, camera );
 }
 
 
