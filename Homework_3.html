@@ -56,16 +56,12 @@
 
 			window.addEventListener( "deviceorientation", deviceOrientation, true);
 
+			var k = 0.2;
 			function deviceOrientation( event )
 			{
 				a = THREE.Math.degToRad(event.alpha);
 				gama = THREE.Math.degToRad(event.gamma);
-				group.rotation.set(0, a, -gama, 'YZX');
-			}
-
-			function animate( t )
-			{
-				
+				group.rotation.set(0, THREE.Math.lerp( group.rotation.y, a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
 			}
 		</script>
 	</body>
