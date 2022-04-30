@@ -22,25 +22,24 @@
 			camera.add( light );
 			scene.add( camera );
 
-			var a = THREE.Math.degToRad(90);
-			var gama = THREE.Math.degToRad(-90);
-			var beta = THREE.Math.degToRad( 0 )
-			camera.rotation.set(beta, a, -gama, 'YXZ');
+			// var a = THREE.Math.degToRad(90);
+			// var gama = THREE.Math.degToRad(-90);
+			// camera.rotation.set(0, a, -gama, 'YXZ');
+			var group = new THREE.Group();
 
 			var boxMaterial = new THREE.MeshPhongMaterial({color: '#ffd9b3'});
 			var boxGeometry = new THREE.BoxGeometry(30, 30, 30);
 			var cube = new THREE.Mesh(boxGeometry, boxMaterial);
 			cube.material.side = THREE.DoubleSide;
-
+			
 			var edges = new THREE.LineSegments(
 				new THREE.EdgesGeometry( cube.geometry ),
 				new THREE.LineBasicMaterial( {color:'black'} )
-			);
+				);
 			cube.add( edges );
-			scene.add( cube );
-
+			group.add(cube)
+			
 			var n = 40;
-			var cones = [];
 			
 			const coneGeometry = new THREE.CylinderGeometry( 0, 0.5, 3, 32 );
 			for (var i=0; i<n; i++)
@@ -48,11 +47,12 @@
 				var material = new THREE.MeshLambertMaterial( {color: new THREE.Color().setHSL( 3*i/16, 1, 0.5 )} );
 				var cone = new THREE.Mesh( coneGeometry, material );
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
-				//cone.rotation.x = -Math.PI/2;
-				cones.push(cone);
-				scene.add( cone );
+				cone.rotation.z = -Math.PI/2;
+				group.add(cone);
+				//scene.add( cone );
 			}
-
+			
+			scene.add( group );
 
 			window.addEventListener( "deviceorientation", deviceOrientation, true);
 
@@ -60,8 +60,7 @@
 			{
 				a = THREE.Math.degToRad(event.alpha);
 				gama = THREE.Math.degToRad(event.gamma);
-				beta = THREE.Math.degToRad( event.beta )
-				camera.rotation.set(beta, a, -gama, 'YXZ');
+				group.rotation.set(0, a, -gama, 'YZX');
 			}
 
 			function animate( t )
