@@ -21,10 +21,6 @@
 			camera.position.set(0, 0, 0 );
 			camera.add( light );
 			scene.add( camera );
-
-			// var a = THREE.Math.degToRad(90);
-			// var gama = THREE.Math.degToRad(-90);
-			// camera.rotation.set(0, a, -gama, 'YXZ');
 			var group = new THREE.Group();
 
 			var boxMaterial = new THREE.MeshPhongMaterial({color: '#ffd9b3'});
@@ -49,7 +45,6 @@
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
 				cone.rotation.z = -Math.PI/2;
 				group.add(cone);
-				//scene.add( cone );
 			}
 			
 			scene.add( group );
@@ -61,7 +56,7 @@
 			{
 				a = THREE.Math.degToRad(event.alpha);
 				gama = THREE.Math.degToRad(event.gamma);
-				group.rotation.set(0, THREE.Math.lerp( group.rotation.y, a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
+				group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
 			}
 		</script>
 	</body>
