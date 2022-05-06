@@ -56,12 +56,15 @@
 			{
 				a = THREE.Math.degToRad(event.alpha);
 				gama = THREE.Math.degToRad(event.gamma);
-				//console.log(gama);
+				
 				if(gama > 0)
 				{
-					group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
+					a = THREE.Math.degToRad(event.alpha - 180);
+					//console.log(a);
+					group.rotation.set(0, THREE.Math.lerp( group.rotation.y, a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
 				}
 				else{
+					//console.log(a);
 					group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
 				}
 			}
