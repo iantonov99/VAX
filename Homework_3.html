@@ -44,6 +44,7 @@
 				var cone = new THREE.Mesh( coneGeometry, material );
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
 				cone.rotation.z = -Math.PI/2;
+				cone.rotation.y = Math.PI;
 				group.add(cone);
 			}
 			
