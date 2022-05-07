@@ -63,12 +63,12 @@
 					gama = THREE.Math.degToRad(180 - event.gamma);
 					//console.log(a);
 					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
-					group.rotation.set(0, -a, gama, 'YZX');
+					group.rotation.set(0, -a, -gama, 'YZX');
 				}
 				else{
 					//console.log(a);
 					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
-					group.rotation.set(0, -a, -gama, 'YZX');
+					group.rotation.set(0, -a, gama, 'YZX');
 				}
 			}
 		</script>
