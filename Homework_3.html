@@ -44,7 +44,7 @@
 				var cone = new THREE.Mesh( coneGeometry, material );
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
 				cone.rotation.z = -Math.PI/2;
-				cone.rotation.y = Math.PI;
+				//cone.rotation.y = Math.PI;
 				group.add(cone);
 			}
 			
@@ -57,6 +57,7 @@
 			{
 				a = THREE.Math.degToRad(event.alpha);
 				gama = THREE.Math.degToRad(event.gamma);
+				beta = THREE.Math.degToRad(event.beta);
 				
 				if(gama > 0)
 				{
@@ -68,12 +69,13 @@
 						a = THREE.Math.degToRad(event.alpha + 180);
 					}
 					gama = THREE.Math.degToRad(180 - event.gamma);
-					group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YXZ');
-					//group.rotation.set(0, -a, -gama, 'YZX');
+					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
+					group.rotation.set(beta, -a, gama, 'YZX');
 				}
 				else{
-					group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
-					//group.rotation.set(0, -a, gama, 'YZX');
+					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
+					
+					group.rotation.set(beta, -a, -gama, 'YZX');
 				}
 			}
 		</script>
