@@ -43,8 +43,6 @@
 				var material = new THREE.MeshLambertMaterial( {color: new THREE.Color().setHSL( 3*i/16, 1, 0.5 )} );
 				var cone = new THREE.Mesh( coneGeometry, material );
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
-				cone.rotation.z = -Math.PI/2;
-				//cone.rotation.y = Math.PI;
 				group.add(cone);
 			}
 			
@@ -52,31 +50,36 @@
 
 			window.addEventListener( "deviceorientation", deviceOrientation, true);
 
-			var k = 0.2;
+			var eyem = new THREE.Quaternion().setFromEuler(
+        		new THREE.Euler(-Math.PI / 2, 0, 0));
+    		var d2r = Math.PI / 180;
+			var getOrientation = function () {
+				// W3C DeviceOrientation Event Specification (Draft)
+				if (window.screen.orientation) return window.screen.orientation.angle;
+				// Safari
+				if (typeof window.orientation === "number") return window.orientation;
+				return 0;
+    		};
 			function deviceOrientation( event )
 			{
-				a = THREE.Math.degToRad(event.alpha);
-				gama = THREE.Math.degToRad(event.gamma);
+				var angle = getOrientation();
+				var alpha = event.alpha || 0;
+				var beta = event.beta || 0;
+				var gamma = event.gamma || 0;
+				if (alpha === 0 && beta === 0 && gamma === 0) return;
 				
-				
-				if(gama > 0)
-				{
-					if(event.alpha > 180)
-					{
-						a = THREE.Math.degToRad(event.alpha - 180);
-					}
-					else{
-						a = THREE.Math.degToRad(event.alpha + 180);
-					}
-					gama = THREE.Math.degToRad(180 - event.gamma);
-					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
-					group.rotation.set(0, -a, gama, 'YZX');
-				}
-				else{
-					//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
-					beta = THREE.Math.degToRad(90 - event.alpha);
-					group.rotation.set(beta, -a, -gama, 'YZX');
-				}
+				// device rot axis order Z-X-Y as alpha, beta, gamma
+				// portrait mode Z=rear->front(screen), X=left->right, Y=near->far(cam)
+				// => map Z-X-Y to 3D world axes as:
+				// - portrait  => y-x-z
+				// - landscape => y-z-x
+				var rotType = (angle === 0 || angle === 180) ? "YXZ" : "YZX";
+				var rotm = new THREE.Quaternion().setFromEuler(
+					new THREE.Euler(beta * d2r, alpha * d2r, -gamma * d2r, rotType));
+				var devm = new THREE.Quaternion().setFromEuler(
+					new THREE.Euler(0, -angle * d2r, 0));
+				rotm.multiply(devm).multiply(eyem); //rot = (rot x dev) x eye
+				camera.quaternion.copy(rotm);
 			}
 		</script>
 	</body>
