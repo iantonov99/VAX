@@ -73,6 +73,17 @@
 				// => map Z-X-Y to 3D world axes as:
 				// - portrait  => y-x-z
 				// - landscape => y-z-x
+				if(gamma > 0)
+				{
+					// if(event.alpha > 180)
+					// {
+					// 	alpha = THREE.Math.degToRad(event.alpha - 180);
+					// }
+					// else{
+					// 	alpha = THREE.Math.degToRad(event.alpha + 180);
+					// }
+					gamma = -gamma;
+				}
 				var rotType = (angle === 0 || angle === 180) ? "YXZ" : "YZX";
 				var rotm = new THREE.Quaternion().setFromEuler(
 					new THREE.Euler(beta * d2r, alpha * d2r, -gamma * d2r, rotType));
