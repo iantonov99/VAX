@@ -16,7 +16,6 @@
 		<script>
 
 			vaxInitParallax();
-			//vaxInit();
 			light.intensity = 0.75;
 			camera.position.set(0, 0, 0 );
 			camera.add( light );
@@ -43,8 +42,6 @@
 				var material = new THREE.MeshLambertMaterial( {color: new THREE.Color().setHSL( 3*i/16, 1, 0.5 )} );
 				var cone = new THREE.Mesh( coneGeometry, material );
 				cone.position.set(Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5, Math.floor(Math.random() * (13.5 - -13.5) ) + -13.5);
-				//cone.rotation.z = -Math.PI/2;
-				//cone.rotation.y = Math.PI;
 				group.add(cone);
 			}
 			
@@ -55,36 +52,11 @@
 			var k = 0.2;
 			function deviceOrientation( event )
 			{
-				// a = THREE.Math.degToRad(event.alpha);
-				// gama = THREE.Math.degToRad(event.gamma);
-				
-				
-				// if(gama > 0)
-				// {
-				// 	if(event.alpha > 180)
-				// 	{
-				// 		a = THREE.Math.degToRad(event.alpha - 180);
-				// 	}
-				// 	else{
-				// 		a = THREE.Math.degToRad(event.alpha + 180);
-				// 	}
-				// 	gama = THREE.Math.degToRad(180 - event.gamma);
-				// 	//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, -gama, k ), 'YZX');
-				// 	group.rotation.set(0, -a, gama, 'YZX');
-				// }
-				// else{
-				// 	//group.rotation.set(0, THREE.Math.lerp( group.rotation.y, -a, k ), THREE.Math.lerp( group.rotation.z, gama, k ), 'YZX');
-				// 	beta = THREE.Math.degToRad(90 - event.alpha);
-				// 	group.rotation.set(beta, -a, -gama, 'YZX');
-				// }
-
-				// взимаме ъглите
 				var alpha = event.alpha,
 				gamma = event.gamma;
 
 				if( alpha === null ) return;
 				
-				// поправяме ги, за да ни е удобно
 				if( gamma>=0 )
 					gamma = 90-gamma;
 				else
@@ -93,12 +65,10 @@
 					gamma = -90-gamma;
 				}
 									
-				// правим ги на радиани
 				alpha = THREE.Math.degToRad( alpha );
 				gamma = THREE.Math.degToRad( gamma );
 				
-				// въртим камерата
-				camera.rotation.set( gamma, alpha, 0, 'YXZ' );
+				camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
 			}
 		</script>
 	</body>

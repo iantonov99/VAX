@@ -15,64 +15,58 @@
 		<script>
 			vaxInit();
 			
+			camera = new THREE.PerspectiveCamera( 27, window.innerWidth/window.innerHeight, 400, 3000 );
 			camera.fov = 30;
-			onWindowResize();
-				
-			scene.background = new THREE.CubeTextureLoader().load( [
+			// onWindowResize();
+			var texture = new THREE.CubeTextureLoader().load( [
 				'posx.jpg', 'negx.jpg',
 				'posy.jpg', 'negy.jpg',
 				'posz.jpg', 'negz.jpg' ] );
+				
+			scene.background = texture;
 				
 
 			//handle device movements
 			window.addEventListener( "deviceorientation", deviceOrientation, true);
 
-			var eyem = new THREE.Quaternion().setFromEuler(
-        		new THREE.Euler(-Math.PI / 2, 0, 0));
-    		var d2r = Math.PI / 180;
-			var getOrientation = function () {
-				if (window.screen.orientation) return window.screen.orientation.angle;
-
-				return 0;
-    		};
+			var k = 0.2;
 			function deviceOrientation( event )
 			{
-				var angle = getOrientation();
-				var alpha = event.alpha || 0;
-				var beta = event.beta || 0;
-				var gamma = event.gamma || 0;
-				if (alpha === 0 && beta === 0 && gamma === 0) return;
+				var alpha = event.alpha,
+				gamma = event.gamma;
+
+				if( alpha === null ) return;
 				
-				if(gamma > 0)
+				if( gamma>=0 )
+					gamma = 90-gamma;
+				else
 				{
-					gamma = -gamma;
+					alpha = alpha+180;
+					gamma = -90-gamma;
 				}
-				var rotType = (angle === 0 || angle === 180) ? "YXZ" : "YZX";
-				var rotm = new THREE.Quaternion().setFromEuler(
-					new THREE.Euler(beta * d2r, alpha * d2r, -gamma * d2r, rotType));
-				var devm = new THREE.Quaternion().setFromEuler(
-					new THREE.Euler(0, -angle * d2r, 0));
-				rotm.multiply(devm).multiply(eyem);
-				camera.quaternion.slerp(rotm, 0.2);
+									
+				alpha = THREE.Math.degToRad( alpha );
+				gamma = THREE.Math.degToRad( gamma );
+				
+				camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
 			}
 
 			var objects = [];
 			var geometry = new THREE.IcosahedronGeometry( 10, 0 );
-			var texture = new THREE.CubeTextureLoader().load( [
-				'posx.jpg', 'negx.jpg',
-				'posy.jpg', 'negy.jpg',
-				'posz.jpg', 'negz.jpg' ] );
+
 					texture.mapping = THREE.CubeRefractionMapping;
 			var material = new THREE.MeshBasicMaterial( { envMap: texture, refractionRatio: 0.97 } );
 
 
-			for ( let i = 0; i < 50; i ++ ) {
+			for ( let i = 0; i < 30; i ++ ) {
 
 				var mesh = new THREE.Mesh( geometry, material );
-				mesh.position.x = Math.random() * 1000 - 500;
-				mesh.position.y = Math.random() * 1000 - 500;
-				mesh.position.z = Math.random() * 1000 - 500;
-				mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
+				mesh.scale.set( 20, 20, 20 );
+				
+				var r = THREE.Math.randFloat(2000,3000),
+					a = THREE.Math.randFloat(0,2*Math.PI),
+					b = THREE.Math.randFloat(Math.PI/4,Math.PI/1.8);
+				mesh.position.setFromSphericalCoords( r, b, a );
 				scene.add( mesh );
 
 				objects.push( mesh );
@@ -81,7 +75,7 @@
 
 			function animate( t )
 			{
-				for ( let i = 0; i < 50; i ++ ) {
+				for ( let i = 0; i < 30; i ++ ) {
 
 					objects[i].rotation.set(0,t/3,0);
 
