@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Niagara</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script src="three.min.js"></script>
+		<script src="vax.js"></script>
+	</head>
+	
+	<body>
+		<script>
+			vaxInit();
+			
+			camera.fov = 30;
+			onWindowResize();
+				
+			scene.background = new THREE.CubeTextureLoader().load( [
+				'posx.jpg', 'negx.jpg',
+				'posy.jpg', 'negy.jpg',
+				'posz.jpg', 'negz.jpg' ] );
+				
+
+			//handle device movements
+			window.addEventListener( "deviceorientation", deviceOrientation, true);
+
+			var eyem = new THREE.Quaternion().setFromEuler(
+        		new THREE.Euler(-Math.PI / 2, 0, 0));
+    		var d2r = Math.PI / 180;
+			var getOrientation = function () {
+				if (window.screen.orientation) return window.screen.orientation.angle;
+
+				return 0;
+    		};
+			function deviceOrientation( event )
+			{
+				var angle = getOrientation();
+				var alpha = event.alpha || 0;
+				var beta = event.beta || 0;
+				var gamma = event.gamma || 0;
+				if (alpha === 0 && beta === 0 && gamma === 0) return;
+				
+				if(gamma > 0)
+				{
+					gamma = -gamma;
+				}
+				var rotType = (angle === 0 || angle === 180) ? "YXZ" : "YZX";
+				var rotm = new THREE.Quaternion().setFromEuler(
+					new THREE.Euler(beta * d2r, alpha * d2r, -gamma * d2r, rotType));
+				var devm = new THREE.Quaternion().setFromEuler(
+					new THREE.Euler(0, -angle * d2r, 0));
+				rotm.multiply(devm).multiply(eyem);
+				camera.quaternion.slerp(rotm, 0.2);
+			}
+
+			var objects = [];
+			var geometry = new THREE.IcosahedronGeometry( 10, 0 );
+			var texture = new THREE.CubeTextureLoader().load( [
+				'posx.jpg', 'negx.jpg',
+				'posy.jpg', 'negy.jpg',
+				'posz.jpg', 'negz.jpg' ] );
+					texture.mapping = THREE.CubeRefractionMapping;
+			var material = new THREE.MeshBasicMaterial( { envMap: texture, refractionRatio: 0.97 } );
+
+
+			for ( let i = 0; i < 50; i ++ ) {
+
+				var mesh = new THREE.Mesh( geometry, material );
+				mesh.position.x = Math.random() * 1000 - 500;
+				mesh.position.y = Math.random() * 1000 - 500;
+				mesh.position.z = Math.random() * 1000 - 500;
+				mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
+				scene.add( mesh );
+
+				objects.push( mesh );
+
+			}
+
+			function animate( t )
+			{
+				for ( let i = 0; i < 50; i ++ ) {
+
+					objects[i].rotation.set(0,t/3,0);
+
+				}
+			}
+			
+		</script>
+		
+	</body>
+</html>
+
+
