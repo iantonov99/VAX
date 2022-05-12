@@ -67,11 +67,8 @@
 									
 				alpha = THREE.Math.degToRad( alpha );
 				gamma = THREE.Math.degToRad( gamma );
-				// var destination = new THREE.Vector3(gamma, alpha, 0);
-				// destination.lerp(camera.rotation, k);
-				
-				// camera.rotation.set( destination.x, destination.y, destination.z, 'YXZ' );
-				camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
+
+				camera.rotation.set( gamma.toFixed(3), alpha.toFixed(3), 0, 'YXZ' );
 			}
 		</script>
 	</body>
