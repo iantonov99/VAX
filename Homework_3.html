@@ -52,8 +52,8 @@
 			var k = 0.3;
 			function deviceOrientation( event )
 			{
-				var alpha = Math.round(event.alpha),
-				gamma = Math.round(event.gamma);
+				var alpha = event.alpha.toFixed(1),
+				gamma = event.gamma.toFixed(1);
 
 				if( alpha === null ) return;
 				
