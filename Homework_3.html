@@ -52,8 +52,8 @@
 			var k = 0.3;
 			function deviceOrientation( event )
 			{
-				var alpha = event.alpha,
-				gamma = event.gamma;
+				var alpha = Math.round(event.alpha),
+				gamma = Math.round(event.gamma);
 
 				if( alpha === null ) return;
 				
@@ -68,7 +68,7 @@
 				alpha = THREE.Math.degToRad( alpha );
 				gamma = THREE.Math.degToRad( gamma );
 
-				camera.rotation.set( gamma.toFixed(7), alpha.toFixed(7), 0, 'YXZ' );
+				camera.rotation.set( gamma, alpha, 0, 'YXZ' );
 			}
 		</script>
 	</body>
