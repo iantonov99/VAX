@@ -48,7 +48,8 @@
 				alpha = THREE.Math.degToRad( alpha );
 				gamma = THREE.Math.degToRad( gamma );
 				
-				camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
+				camera.rotation.set( gamma, alpha, 0, 'YXZ' );
+				//camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
 			}
 
 			var objects = [];
