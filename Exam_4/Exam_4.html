@@ -17,7 +17,6 @@
 			
 			camera = new THREE.PerspectiveCamera( 27, window.innerWidth/window.innerHeight, 400, 3000 );
 			camera.fov = 30;
-			// onWindowResize();
 			var texture = new THREE.CubeTextureLoader().load( [
 				'posx.jpg', 'negx.jpg',
 				'posy.jpg', 'negy.jpg',
@@ -49,15 +48,13 @@
 				gamma = THREE.Math.degToRad( gamma );
 				
 				camera.rotation.set( gamma, alpha, 0, 'YXZ' );
-				//camera.rotation.set( THREE.Math.lerp(camera.rotation.x, gamma, k), THREE.Math.lerp(camera.rotation.y, alpha, k), 0, 'YXZ' );
 			}
 
 			var objects = [];
 			var geometry = new THREE.IcosahedronGeometry( 10, 0 );
-
-					texture.mapping = THREE.CubeRefractionMapping;
+			texture.mapping = THREE.CubeRefractionMapping;
+			
 			var material = new THREE.MeshBasicMaterial( { envMap: texture, refractionRatio: 0.97 } );
-
 
 			for ( let i = 0; i < 30; i ++ ) {
 
