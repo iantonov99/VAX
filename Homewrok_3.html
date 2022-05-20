@@ -14,8 +14,23 @@
 	
 	<body>
 		<script>
+			console.log(typeof(DeviceOrientationEvent.requestPermission) === "function")
+			if (DeviceOrientationEvent && typeof(DeviceOrientationEvent.requestPermission) === "function") {
+				console.log("damn");
+				DeviceOrientationEvent.requestPermission().then(response => {
+					if (response === "granted") {
+						console.log("nice");
+					// Permission granted    
+				} else {
+					// Permission denied
+					console.log("noo");
+				}
+				})
 
-			vaxInitParallax();
+
+			}
+			
+					vaxInitParallax();
 			light.intensity = 0.75;
 			camera.position.set(0, 0, 0 );
 			camera.add( light );
@@ -70,6 +85,8 @@
 
 				camera.rotation.set( gamma, alpha, 0, 'YXZ' );
 			}
+
+			
 		</script>
 	</body>
 </html>
